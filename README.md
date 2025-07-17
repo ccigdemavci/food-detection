@@ -1,82 +1,80 @@
-# food-detection
+# 🍽️ Yemek Tanıma ve Garson Performansı Takip Sistemi
 
-Yemek Fiyatı ve Garson Performansı Ölçüm Sistemi
-Bu proje, bir restoran ortamında kamera görüntülerinden otomatik olarak yemek türlerinin tanınması, garsonların kimliklerinin yüz tanıma ile belirlenmesi, masaların QR kodlarla tespiti ve bu bilgilerin birleştirilerek hem anlık hem de geçmişe dönük analizlerin yapılmasını amaçlamaktadır. Sistem, bilgisayarla görme ve makine öğrenmesi yöntemleri ile gerçekleştirilmiştir.
+Bu proje, bir restoran ortamında gerçekleşen servis sürecini bilgisayarla görme teknikleri kullanarak analiz eden bir sistemdir. Amaç; yemeklerin tespit edilmesi, bu yemeklerin hangi masaya servis edildiğinin belirlenmesi, servisi gerçekleştiren garsonun kim olduğunun tanınması ve tüm bu bilgilerin otomatik olarak kaydedilmesidir. Sistem aynı zamanda her garsonun performansını da analiz etme potansiyeline sahiptir.
 
- Proje Amacı
-Geliştirilen sistem ile:
+## 🎯 Projenin Amacı
 
-Masalara gelen yemeklerin otomatik olarak tanınması
+- Restoran içi görüntülerden masa, yemek ve garsonu tespit ederek kayıt altına almak.
+- Servis edilen yemeklerin türüne göre otomatik hesaplama yapmak.
+- Garsonların görev yaptığı masaları ve servis ettiği yemekleri analiz ederek performans ölçümü yapılmasını sağlamak.
+- Geliştirilen sistemin gerçek zamanlı çalışabilmesini ve ileride genişletilebilmesini sağlamak.
 
-Hizmeti sağlayan garsonun kimliğinin yüz tanıma ile belirlenmesi
+## ⚙️ Kullanılan Teknolojiler
 
-Her masanın kimliklendirilmesi için QR kod kullanımının sağlanması
+- Python 3.9
+- OpenCV
+- face_recognition
+- Ultralytics YOLOv8
+- pyzbar (QR kod tanıma)
+- Matplotlib (görselleştirme)
+- CSV (kayıt işlemleri)
+- Jupyter Notebook
 
-Her işlem için hesaplanan fiyatın tahmini olarak belirlenmesi
 
-Bu bilgilerin görsel olarak video üzerine işlenmesi
+## 🧠 Sistem Bileşenleri
 
-Tüm logların kaydedilmesiyle performans ve analiz yapılabilirliği sağlanması
-amaçlanmaktadır.
+### 1. **Yüz Tanıma (Garson Tespiti)**
+Garsonların yüz fotoğrafları üzerinden `face_recognition` kütüphanesi ile encoding alınır. Video içerisinden alınan karedeki yüz ile kıyaslanarak hangi garson olduğu belirlenir.
 
-Kullanılan Teknolojiler
-Python 3.9
+### 2. **QR Kod Okuma (Masa Tespiti)**
+Masaların üzerine yerleştirilen QR kodlar video görüntüsünde tespit edilerek her an hangi masanın ön planda olduğu belirlenir.
 
-OpenCV – Görüntü işleme
+### 3. **Yemek Tanıma (YOLO)**
+Eğitilmiş YOLOv8 modeli kullanılarak görüntüdeki yemekler sınıflandırılır:
+- `soup`, `grilled`, `salad`, `stews`, `dessert` gibi sınıflar.
 
-face_recognition – Garson tanıma (yüz tanıma)
+### 4. **Fiyat Hesaplama**
+Her yemek türünün sabit bir fiyatı olup toplam hesap otomatik olarak belirlenir.
 
-YOLOv8 (Ultralytics) – Yemek tespiti (object detection)
+### 5. **Kayıt ve Raporlama**
+Tespit edilen bilgiler (garson, masa, yemek, zaman) `loglar.csv` dosyasına yazılır. İleride performans raporu için kullanılabilir.
 
-pyzbar – QR kod ile masa tanıma
+## 🚀 Kurulum
 
-Matplotlib – Görselleştirme
+1. Ortam oluştur:
+   ```bash
+   conda create -n restoran_env python=3.9
+   conda activate restoran_env
+   ```
 
-ZBar – QR kod çözümleyici kütüphane
+2. Gerekli kütüphaneleri yükle:
+   ```bash
+   pip install opencv-python face_recognition matplotlib pyzbar ultralytics
+   ```
 
-NumPy, CSV, datetime – Yardımcı işlemler ve kayıt
+3. macOS kullanıcıları için `libzbar` yüklenmeli:
+   ```bash
+   brew install zbar
+   ```
 
- Sistem Bileşenleri
-1.  Yemek Tanıma
-YOLOv8 modeli, dessert, salad, grilled, soup, stews olmak üzere beş yemek kategorisini tanıyacak şekilde özel olarak eğitildi.
+## 📊 Çıktılar
 
-Tespit edilen yemeklerin her biri önceden belirlenmiş fiyatlarla eşleştirilerek toplam hesap tahmini yapılmaktadır.
+- Her 2 saniyede bir video karesi analiz edilir.
+- Tespit edilen bilgiler:
+  - Masa numarası
+  - Garson adı
+  - Yemek listesi
+  - Toplam hesap
+- Bu bilgiler hem videoya görsel olarak işlenir hem de `.csv` olarak kayıt altına alınır.
 
-2.  Garson Tanıma
-face_recognition kütüphanesi kullanılarak, garsonların yüzlerinden alınan encoding’ler ile videodaki yüzler karşılaştırılır.
+## 📝 Sonuç
 
-Yüz benzerlik toleransı (tolerance) %50 olarak ayarlanmıştır.
+Bu proje, bilgisayarla görme tekniklerini kullanarak restoran ortamında otomatik hizmet izleme ve kayıt sistemi oluşturmayı başarmıştır. Yüz tanıma ile garson tespiti, QR kod ile masa takibi ve nesne tespiti ile yemek sınıflandırma gibi birden fazla teknolojiyi bir arada kullanarak işlevsel ve genişletilebilir bir sistem ortaya konmuştur.
 
-3.  Masa Tanıma
-Masaların tanınması için her masada QR kodlar kullanılmıştır.
+Gerçek zamanlı çalışabilen bu sistem, ileride;
+- Garsonların servis sürelerinin analiz edilmesi,
+- Müşteri memnuniyeti takibi için entegrasyon,
+- Gerçek veritabanı bağlantısı ile POS sistemleriyle bütünleşme,
+- Performans raporlarının otomatik oluşturulması gibi gelişmiş özelliklerle genişletilebilir.
 
-pyzbar modülü ile video içerisinden QR kodlar okunarak masa bilgisi alınmaktadır.
-
-4.  Loglama ve Raporlama
-Her tespitte: zaman, garson, masa, yemekler ve toplam ücret bilgileri CSV dosyasına kaydedilir.
-
-Böylece geçmişe dönük performans analizi yapılabilir.
-
-✅ Kullanım
-
-# Ortam kurulum
-conda create -n face_env python=3.9
-conda activate face_env
-pip install -r requirements.txt
-
-# Gerekli ZBar kütüphanesini yükleyin (macOS için)
-brew install zbar
-
-# Ana betiği çalıştırın
-python main.py
- Sonuç
-Bu sistem, görüntü işleme ve derin öğrenme  uygulamalarından biri olarak restoran otomasyonu alanında yenilikçi bir örnek teşkil etmektedir. Proje kapsamında:
-
-YOLO ile nesne tanıma,
-
-yüz tanıma algoritmaları ile kimlik belirleme,
-
-QR kod çözümleme,
-
-ve tüm bu bileşenlerin bir araya getirilmesiyle otomatik hesaplama ve kayıt tutma başarıyla gerçekleştirilmiştir.
-
+Ayrıca sistemin modüler yapısı sayesinde, diğer hizmet sektörlerine de kolaylıkla uyarlanması mümkündür. Bu yönüyle proje, akademik olarak bilgisayarla görme alanına önemli bir uygulamalı katkı sunmaktadır.
